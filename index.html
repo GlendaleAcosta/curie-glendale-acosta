@@ -142,17 +142,35 @@
         }
       }
 
+      // LIFECYCLE METHODS
+
+      componentWillUnmount() {
+        document.removeEventListener('click', this.handleOutsideClick, false);
+      }
+
       // EVENT HANDLERS
 
-      onTriggerClick() {
+      handleOutsideClick = e => {
+        if(!ReactDOM.findDOMNode(this).contains(e.target)) {
+          this.setState({
+            shouldShowOptions: false
+          })
+          document.removeEventListener('click', this.handleOutsideClick, false);
+        }
+      }
+
+      onTriggerClick = () => {
         const { shouldShowOptions } = this.state;
+
+        if (!shouldShowOptions)
+          document.addEventListener('click', this.handleOutsideClick, false);
 
         this.setState({
           shouldShowOptions: !shouldShowOptions
         });
       }
 
-      onOptionClick(team) {
+      onOptionClick = (team) => {
         this.setState({
           selectedTeam: team,
           shouldShowOptions: false
@@ -161,19 +179,21 @@
 
       // RENDER FUNCTIONS
 
-      renderTrigger() {
+      renderTrigger = () => {
         const { selectedTeam } = this.state;
+
         return (
-          <div
+          <button
+            tabIndex="0"
             className="Dropdown__trigger"
             onClick={this.onTriggerClick}
           >
             <IdenticonBadge team={selectedTeam} />
-          </div>
+          </button>
         );
       }
 
-      maybeRenderOptions() {
+      maybeRenderOptions = () => {
         const { shouldShowOptions } = this.state;
 
         return shouldShowOptions && (
@@ -183,15 +203,16 @@
         );
       }
 
-      renderOption(team) {
+      renderOption = (team) => {
         return (
-          <div
+          <button
+            tabIndex="0"
             key={team.id}
             className="Dropdown__option"
-            onClick={this.onOptionClick}
+            onClick={() => this.onOptionClick(team)}
           >
             <IdenticonBadge team={team} />
-          </div>
+          </button>
         );
       }
 
@@ -214,6 +235,7 @@
     // React application.
 
     class App extends React.Component {
+
       render() {
         return (
           <div className="App">
