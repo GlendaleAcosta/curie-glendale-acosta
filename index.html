@@ -137,7 +137,7 @@
         super(props);
 
         this.state = {
-          selectedTeam: TEAMS[0],
+          selectedOption: props.options ? props.options[0] : null,
           shouldShowOptions: false
         }
       }
@@ -170,9 +170,9 @@
         });
       }
 
-      onOptionClick = (team) => {
+      onOptionClick = (option) => {
         this.setState({
-          selectedTeam: team,
+          selectedOption: option,
           shouldShowOptions: false
         });
       }
@@ -180,49 +180,59 @@
       // RENDER FUNCTIONS
 
       renderTrigger = () => {
-        const { selectedTeam } = this.state;
-
+        const { selectedOption } = this.state;
         return (
           <button
             tabIndex="0"
             className="Dropdown__trigger"
             onClick={this.onTriggerClick}
           >
-            <IdenticonBadge team={selectedTeam} />
+            <IdenticonBadge team={selectedOption} />
           </button>
         );
       }
 
       maybeRenderOptions = () => {
         const { shouldShowOptions } = this.state;
-
+        const { options } = this.props;
         return shouldShowOptions && (
           <div className="Dropdown__options">
-            {TEAMS.map(team => this.renderOption(team))}
+            {options.map(option => this.renderOption(option))}
           </div>
         );
       }
 
-      renderOption = (team) => {
+      renderOption = (option) => {
         return (
           <button
             tabIndex="0"
-            key={team.id}
+            key={option.id}
             className="Dropdown__option"
-            onClick={() => this.onOptionClick(team)}
+            onClick={() => this.onOptionClick(option)}
           >
-            <IdenticonBadge team={team} />
+            <IdenticonBadge team={option} />
           </button>
         );
       }
 
+      renderNoOptions = () => {
+        const {noOptionsText} = this.props;
+        return <button
+          className="Dropdown__trigger"
+          disabled
+        >
+          {noOptionsText || 'No options available'}
+        </button>
+      }
+
       render() {
-        return (
+        const {options} = this.props;
+        return options && options.length > 0 && (
           <div className="Dropdown">
             {this.renderTrigger()}
             {this.maybeRenderOptions()}
           </div>
-        )
+        ) || this.renderNoOptions()
       }
     }
 
@@ -235,13 +245,25 @@
     // React application.
 
     class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          teams: TEAMS,
+          teamMembers: TEAM_MEMBERS
+        }
+      }
+
 
       render() {
+        const {teams, teamMembers} = this.state;
         return (
           <div className="App">
             <h1>Select a team</h1>
 
-            <Dropdown />
+            <Dropdown
+              options={teams}
+              noOptionsText={'No teams available'}
+            />
           </div>
         );
       }
