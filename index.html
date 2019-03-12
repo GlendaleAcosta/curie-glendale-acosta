@@ -175,6 +175,9 @@
           selectedOption: option,
           shouldShowOptions: false
         });
+        if (this.props.onClick) {
+          this.props.onClick(option);
+        }
       }
 
       // RENDER FUNCTIONS
@@ -253,6 +256,13 @@
         }
       }
 
+      changeSecondDropdown = (selectedTeam) => {
+        const members = TEAM_MEMBERS.filter(member => member.teams.includes(selectedTeam.id))
+        this.setState({
+          teamMembers: members
+        });
+      }
+
 
       render() {
         const {teams, teamMembers} = this.state;
@@ -262,7 +272,13 @@
 
             <Dropdown
               options={teams}
+              onClick={this.changeSecondDropdown}
               noOptionsText={'No teams available'}
+            />
+
+            <Dropdown
+              options={teamMembers}
+              noOptionsText={'No team members available'}
             />
           </div>
         );
