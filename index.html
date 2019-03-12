@@ -144,6 +144,13 @@
 
       // LIFECYCLE METHODS
 
+      shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.options !== nextProps.options) {
+          this.reset(nextProps)
+        }
+        return true
+      }
+
       componentWillUnmount() {
         document.removeEventListener('click', this.handleOutsideClick, false);
       }
@@ -184,7 +191,7 @@
 
       renderTrigger = () => {
         const { selectedOption } = this.state;
-        return (
+        return selectedOption && (
           <button
             tabIndex="0"
             className="Dropdown__trigger"
@@ -226,6 +233,13 @@
         >
           {noOptionsText || 'No options available'}
         </button>
+      }
+
+      reset = (newProps) => {
+        this.setState({
+          selectedOption: newProps.options ? newProps.options[0] : null,
+          shouldShowOptions: false
+        });
       }
 
       render() {
